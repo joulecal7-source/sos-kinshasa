@@ -5,8 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOS Kinshasa — Sécurité Citoyenne</title>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 :root {
   --bg: #07090F;
@@ -663,17 +661,32 @@ select.form-input {
   background:var(--bg3);
   border:1px solid var(--border);
   border-radius:16px;
-  height:300px;
+  height:320px;
   position:relative;
   overflow:hidden;
   margin-bottom:20px;
 }
 
-#kinshasa-map {
+.map-box iframe {
   width:100%;
   height:100%;
+  border:none;
   border-radius:16px;
-  z-index:1;
+}
+
+.map-overlay-badge {
+  position:absolute;
+  top:10px; left:10px;
+  background:rgba(7,9,15,0.85);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:6px 12px;
+  font-size:11px;
+  color:var(--red);
+  font-weight:800;
+  letter-spacing:1px;
+  z-index:10;
+  pointer-events:none;
 }
 
 /* Alerts list */
@@ -1088,8 +1101,25 @@ select.form-input {
     </div>
 
     <div class="sec-label">Carte des incidents · Kinshasa</div>
-    <div class="map-box">
-      <div id="kinshasa-map"></div>
+    <div class="map-box" id="mapBox">
+      <div class="map-overlay-badge">🔴 INCIDENTS EN COURS</div>
+      <!-- Carte statique OpenStreetMap de Kinshasa -->
+      <img
+        id="staticMap"
+        src="https://staticmap.openstreetmap.de/staticmap.php?center=-4.3225,15.3222&zoom=11&size=800x320&maptype=mapnik&markers=-4.298,15.285,red|-4.380,15.340,red|-4.340,15.370,orange|-4.310,15.305,orange|-4.325,15.295,green|-4.355,15.325,blue"
+        alt="Carte de Kinshasa"
+        style="width:100%;height:100%;object-fit:cover;border-radius:16px;"
+        onerror="this.style.display='none'; document.getElementById('mapFallback').style.display='flex';"
+      />
+      <!-- Fallback si image ne charge pas -->
+      <div id="mapFallback" style="display:none;width:100%;height:100%;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+        <div style="font-size:40px;">🗺</div>
+        <a id="mapLink" href="https://maps.google.com/?q=-4.3225,15.3222" target="_blank"
+          style="background:var(--red);color:#fff;padding:10px 20px;border-radius:10px;font-weight:800;font-size:13px;letter-spacing:1px;text-decoration:none;">
+          📍 Ouvrir Kinshasa sur Google Maps
+        </a>
+        <div style="font-size:11px;color:var(--muted);letter-spacing:1px;">Appuyez pour voir la carte</div>
+      </div>
     </div>
 
     <div class="sec-label">Alertes récentes</div>
@@ -1322,61 +1352,21 @@ function populateCommunes() {
 
 populateCommunes();
 
-// ===== LEAFLET MAP (OpenStreetMap) =====
-let kinshasaMap = null;
-let userMarker = null;
-
-function initMap() {
-  if (kinshasaMap) return;
-
-  // Centre de Kinshasa
-  kinshasaMap = L.map('kinshasa-map', {
-    center: [-4.3225, 15.3222],
-    zoom: 11,
-    zoomControl: true,
-    attributionControl: false
-  });
-
-  // Tuiles OpenStreetMap
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-  }).addTo(kinshasaMap);
-
-  // Incidents simulés sur la vraie carte de Kinshasa
-  const incidents = [
-    { lat: -4.298, lng: 15.285, type: '🔒 Kidnapping', commune: 'Ngaliema', color: '#FF2236', status: 'ACTIF' },
-    { lat: -4.380, lng: 15.340, type: '🔪 Kuluna', commune: 'Masina', color: '#FF2236', status: 'ACTIF' },
-    { lat: -4.340, lng: 15.370, type: '🏠 Intrusion', commune: 'Lemba', color: '#FF6B1A', status: 'EN COURS' },
-    { lat: -4.310, lng: 15.305, type: '🚨 Vol armé', commune: 'Gombe', color: '#FF6B1A', status: 'EN COURS' },
-    { lat: -4.325, lng: 15.295, type: '⚠️ Agression', commune: 'Kasa-Vubu', color: '#06D6A0', status: 'RÉSOLU' },
-    { lat: -4.355, lng: 15.325, type: '🔪 Kuluna', commune: 'Kalamu', color: '#007FFF', status: 'CLÔTURÉ' },
-  ];
-
-  incidents.forEach(inc => {
-    const circle = L.circleMarker([inc.lat, inc.lng], {
-      radius: 10,
-      fillColor: inc.color,
-      color: inc.color,
-      weight: 2,
-      opacity: 0.9,
-      fillOpacity: 0.7
-    }).addTo(kinshasaMap);
-
-    circle.bindPopup(`
-      <div style="font-family:Nunito,sans-serif;font-size:13px;min-width:160px;">
-        <strong>${inc.type}</strong><br>
-        📍 ${inc.commune}<br>
-        <span style="color:${inc.color};font-weight:800;font-size:11px;">${inc.status}</span>
-      </div>
-    `);
-  });
+// Update map to user GPS position when dashboard opens
+function updateMapToUserPosition() {
+  if (userLat && userLng) {
+    const iframe = document.getElementById('kinshasa-map');
+    if (iframe) {
+      iframe.src = `https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d5000!2d${userLng}!3d${userLat}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sfr!2scd!4v1`;
+    }
+  }
 }
 
 // Init map quand on clique sur l'onglet dashboard
 const dashTab = document.querySelector('[onclick*="dashboard"]');
 if (dashTab) {
   dashTab.addEventListener('click', () => {
-    setTimeout(initMap, 300);
+    setTimeout(updateMapToUserPosition, 300);
   });
 }
 
@@ -1411,20 +1401,15 @@ function startGPS() {
         gpsEl.textContent = `📍 GPS actif · Précision ${acc}m`;
         gpsEl.style.color = acc < 100 ? 'var(--green)' : 'var(--gold)';
       }
-      // Affiche position sur la carte si elle est ouverte
-      if (kinshasaMap) {
-        if (userMarker) {
-          userMarker.setLatLng([userLat, userLng]);
-        } else {
-          userMarker = L.circleMarker([userLat, userLng], {
-            radius: 12,
-            fillColor: '#FFD166',
-            color: '#fff',
-            weight: 3,
-            fillOpacity: 1
-          }).addTo(kinshasaMap);
-          userMarker.bindPopup('<strong>📍 Votre position</strong>').openPopup();
-        }
+      // Met à jour le lien Google Maps avec position réelle
+      const mapLink = document.getElementById('mapLink');
+      if (mapLink) {
+        mapLink.href = `https://maps.google.com/?q=${userLat},${userLng}`;
+      }
+      // Met à jour la carte statique avec position réelle
+      const staticMap = document.getElementById('staticMap');
+      if (staticMap) {
+        staticMap.src = `https://staticmap.openstreetmap.de/staticmap.php?center=${userLat},${userLng}&zoom=13&size=800x320&maptype=mapnik&markers=${userLat},${userLng},yellow|-4.298,15.285,red|-4.380,15.340,red`;
       }
     },
     err => {
@@ -1621,4 +1606,3 @@ function registerUser() {
 </script>
 </body>
 </html>
-

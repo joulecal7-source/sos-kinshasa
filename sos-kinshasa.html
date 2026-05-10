@@ -1,0 +1,1511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOS Kinshasa — Sécurité Citoyenne</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #07090F;
+  --bg2: #0D1018;
+  --bg3: #141720;
+  --panel: rgba(255,255,255,0.04);
+  --border: rgba(255,255,255,0.07);
+  --red: #FF2236;
+  --red-dark: #B0001A;
+  --red-glow: rgba(255,34,54,0.3);
+  --orange: #FF6B1A;
+  --orange-glow: rgba(255,107,26,0.3);
+  --gold: #FFD166;
+  --green: #06D6A0;
+  --blue: #118AB2;
+  --text: #EEF0F8;
+  --muted: rgba(238,240,248,0.45);
+  --congo-blue: #007FFF;
+  --congo-yellow: #F7D000;
+  --congo-red: #CE1126;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background effect */
+body::before {
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(255,34,54,0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,127,255,0.05) 0%, transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ===== HEADER ===== */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(7,9,15,0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo { display:flex; align-items:center; gap:12px; }
+
+.logo-badge {
+  width:44px; height:44px;
+  border-radius:10px;
+  background: linear-gradient(135deg, var(--red-dark), var(--red));
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  box-shadow: 0 0 24px var(--red-glow);
+  animation: badge-pulse 3s ease-in-out infinite;
+  gap:2px;
+}
+
+.logo-badge span {
+  font-family:'Oswald';
+  font-size:16px;
+  font-weight:700;
+  color:#fff;
+  line-height:1;
+  letter-spacing:1px;
+}
+
+.logo-badge .shield { font-size:20px; line-height:1; }
+
+@keyframes badge-pulse {
+  0%,100% { box-shadow: 0 0 20px var(--red-glow); }
+  50% { box-shadow: 0 0 40px var(--red-glow), 0 0 80px rgba(255,34,54,0.1); }
+}
+
+.logo-info .brand {
+  font-family:'Oswald';
+  font-size:22px;
+  font-weight:700;
+  letter-spacing:2px;
+  color:#fff;
+  line-height:1;
+}
+
+.logo-info .tagline {
+  font-size:10px;
+  color: var(--muted);
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+/* Congo flag stripe */
+.flag-stripe {
+  height:3px;
+  background: linear-gradient(90deg, var(--congo-blue) 33%, var(--congo-yellow) 33%, var(--congo-yellow) 66%, var(--congo-red) 66%);
+  opacity:0.6;
+}
+
+.header-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; }
+
+.live-badge {
+  display:flex; align-items:center; gap:6px;
+  font-size:11px; font-weight:800;
+  letter-spacing:2px;
+  color: var(--green);
+  text-transform:uppercase;
+}
+
+.live-dot {
+  width:7px; height:7px;
+  background: var(--green);
+  border-radius:50%;
+  box-shadow: 0 0 8px rgba(6,214,160,0.6);
+  animation: blink 1.5s ease-in-out infinite;
+}
+
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+.pop-counter {
+  font-size:10px;
+  color: var(--muted);
+  letter-spacing:1px;
+}
+
+/* ===== TABS ===== */
+.tab-bar {
+  position: sticky;
+  top: 69px;
+  z-index: 40;
+  background: rgba(7,9,15,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-bar::-webkit-scrollbar { display:none; }
+
+.tab {
+  flex-shrink:0;
+  padding: 13px 16px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  color: var(--muted);
+  border:none;
+  background:transparent;
+  cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all 0.2s;
+  white-space:nowrap;
+  font-family:'Nunito';
+}
+
+.tab.active {
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+
+/* ===== MAIN ===== */
+main {
+  position:relative;
+  z-index:5;
+  max-width:860px;
+  margin:0 auto;
+  padding:20px 14px 70px;
+}
+
+/* ===== SCREENS ===== */
+.screen { display:none; }
+.screen.active { display:block; animation: fadeUp 0.3s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+/* ===== SECTION LABEL ===== */
+.sec-label {
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  color: var(--red);
+  margin-bottom:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.sec-label::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--red),transparent); }
+
+/* ===== SOS SCREEN ===== */
+.sos-hero {
+  text-align:center;
+  padding:10px 0 24px;
+}
+
+.city-title {
+  font-family:'Oswald';
+  font-size:42px;
+  font-weight:700;
+  letter-spacing:4px;
+  background: linear-gradient(135deg, #fff 40%, var(--red));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  margin-bottom:4px;
+}
+
+.city-sub {
+  font-size:11px;
+  color: var(--muted);
+  letter-spacing:2px;
+  text-transform:uppercase;
+  margin-bottom:28px;
+}
+
+/* Code card */
+.code-card {
+  background: var(--bg3);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:28px;
+  gap:12px;
+}
+
+.code-left .lbl {
+  font-size:10px;
+  letter-spacing:2px;
+  color:var(--muted);
+  text-transform:uppercase;
+  margin-bottom:4px;
+}
+
+.code-left .val {
+  font-family:'Oswald';
+  font-size:36px;
+  letter-spacing:8px;
+  color: var(--gold);
+  text-shadow:0 0 20px rgba(255,209,102,0.4);
+}
+
+.code-actions { display:flex; flex-direction:column; gap:8px; }
+
+.mini-btn {
+  padding:8px 14px;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  font-family:'Nunito';
+  transition:all 0.2s;
+}
+
+.btn-copy {
+  background:rgba(255,209,102,0.12);
+  color:var(--gold);
+  border:1px solid rgba(255,209,102,0.3);
+}
+.btn-copy:hover { background:rgba(255,209,102,0.22); }
+
+.btn-share {
+  background:rgba(6,214,160,0.1);
+  color:var(--green);
+  border:1px solid rgba(6,214,160,0.25);
+}
+.btn-share:hover { background:rgba(6,214,160,0.2); }
+
+/* SOS Button */
+.sos-wrap {
+  position:relative;
+  display:inline-block;
+  margin-bottom:24px;
+}
+
+.pulse-ring {
+  position:absolute;
+  border-radius:50%;
+  border:1.5px solid rgba(255,34,54,0.25);
+  animation:pulse-out 2.5s ease-out infinite;
+}
+.pulse-ring:nth-child(1) { inset:-20px; animation-delay:0s; }
+.pulse-ring:nth-child(2) { inset:-44px; animation-delay:0.6s; }
+.pulse-ring:nth-child(3) { inset:-70px; animation-delay:1.2s; }
+
+@keyframes pulse-out {
+  0% { transform:scale(0.9); opacity:0.8; }
+  100% { transform:scale(1.1); opacity:0; }
+}
+
+.sos-btn {
+  position:relative;
+  width:190px; height:190px;
+  border-radius:50%;
+  background: conic-gradient(from 180deg, #FF0020, #CC0018, #FF2236, #FF0020);
+  border:none;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  box-shadow:
+    0 0 0 8px rgba(255,34,54,0.1),
+    0 0 50px var(--red-glow),
+    0 20px 60px rgba(0,0,0,0.6),
+    inset 0 3px 0 rgba(255,255,255,0.25),
+    inset 0 -3px 0 rgba(0,0,0,0.3);
+  z-index:5;
+  transition:all 0.12s;
+}
+
+.sos-btn:active { transform:scale(0.93); }
+
+.sos-btn .icon { font-size:36px; margin-bottom:4px; }
+.sos-btn .sos-label {
+  font-family:'Oswald';
+  font-size:44px;
+  color:#fff;
+  line-height:1;
+  letter-spacing:4px;
+  text-shadow:0 2px 12px rgba(0,0,0,0.5);
+}
+.sos-btn .sos-sub {
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:3px;
+  color:rgba(255,255,255,0.65);
+  text-transform:uppercase;
+}
+
+.sos-hint {
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:24px;
+  letter-spacing:0.5px;
+  line-height:1.7;
+}
+
+/* Alert type selector */
+.alert-types {
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-bottom:24px;
+}
+
+.alert-type-btn {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 8px;
+  cursor:pointer;
+  text-align:center;
+  transition:all 0.2s;
+  font-family:'Nunito';
+}
+
+.alert-type-btn.selected {
+  border-color:var(--red);
+  background:rgba(255,34,54,0.08);
+  box-shadow:0 0 12px rgba(255,34,54,0.15);
+}
+
+.alert-type-btn .at-icon { font-size:20px; margin-bottom:4px; }
+.alert-type-btn .at-label { font-size:10px; font-weight:800; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+
+.alert-type-btn.selected .at-label { color:var(--red); }
+
+/* Share grid */
+.share-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.share-btn {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  transition:all 0.2s;
+  font-family:'Nunito';
+  color:var(--text);
+}
+.share-btn:hover { border-color:rgba(255,255,255,0.15); background:var(--panel); }
+.share-btn .sb-icon { font-size:22px; }
+.share-btn .sb-info .sb-name { font-size:13px; font-weight:700; }
+.share-btn .sb-info .sb-desc { font-size:11px; color:var(--muted); }
+
+/* ===== ALERT OVERLAY ===== */
+.overlay {
+  display:none;
+  position:fixed; inset:0;
+  background:rgba(255,34,54,0.08);
+  z-index:200;
+  animation:flicker 0.6s ease-in-out infinite alternate;
+}
+@keyframes flicker { from{background:rgba(255,34,54,0.04)} to{background:rgba(255,34,54,0.15)} }
+
+.alert-modal {
+  position:fixed;
+  top:50%; left:50%;
+  transform:translate(-50%,-50%);
+  background:var(--bg2);
+  border:2px solid var(--red);
+  border-radius:22px;
+  padding:32px 28px;
+  width:min(380px,94vw);
+  z-index:201;
+  box-shadow:0 0 80px var(--red-glow), 0 40px 100px rgba(0,0,0,0.9);
+  text-align:center;
+}
+
+.modal-siren { font-size:52px; animation:siren 0.5s ease-in-out infinite alternate; }
+@keyframes siren { from{transform:scale(1)} to{transform:scale(1.12)} }
+
+.modal-title {
+  font-family:'Oswald';
+  font-size:32px;
+  letter-spacing:4px;
+  color:var(--red);
+  margin:12px 0 8px;
+}
+
+.modal-type-badge {
+  display:inline-block;
+  padding:4px 14px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  background:rgba(255,107,26,0.15);
+  color:var(--orange);
+  border:1px solid rgba(255,107,26,0.3);
+  margin-bottom:14px;
+}
+
+.modal-code {
+  background:rgba(255,34,54,0.08);
+  border:1px solid rgba(255,34,54,0.25);
+  border-radius:12px;
+  padding:14px;
+  font-family:'Oswald';
+  font-size:32px;
+  letter-spacing:8px;
+  color:var(--gold);
+  margin-bottom:12px;
+}
+
+.modal-msg { font-size:13px; color:var(--muted); line-height:1.8; margin-bottom:16px; }
+
+.countdown-bar-wrap {
+  background:rgba(255,255,255,0.05);
+  border-radius:4px;
+  height:4px;
+  margin-bottom:16px;
+  overflow:hidden;
+}
+.countdown-bar {
+  height:100%;
+  background:var(--red);
+  border-radius:4px;
+  width:100%;
+  transition:width 1s linear;
+}
+
+.modal-countdown { font-size:12px; color:var(--green); font-weight:800; letter-spacing:1px; margin-bottom:20px; }
+
+.modal-cancel {
+  background:transparent;
+  border:1px solid var(--border);
+  color:var(--muted);
+  padding:10px 24px;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:1px;
+  font-family:'Nunito';
+  transition:all 0.2s;
+}
+.modal-cancel:hover { border-color:var(--text); color:var(--text); }
+
+/* ===== REGISTER ===== */
+.form-card {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:16px;
+}
+
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+
+.form-group { margin-bottom:14px; }
+.form-label {
+  display:block;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+.form-input {
+  width:100%;
+  background:rgba(255,255,255,0.04);
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:11px 14px;
+  color:var(--text);
+  font-size:14px;
+  font-family:'Nunito';
+  outline:none;
+  transition:border-color 0.2s;
+}
+.form-input:focus { border-color:rgba(255,34,54,0.5); box-shadow:0 0 0 3px rgba(255,34,54,0.08); }
+.form-input::placeholder { color:var(--muted); }
+
+select.form-input {
+  cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' fill='none' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 14px center;
+}
+
+.contact-row {
+  display:flex;
+  gap:8px;
+  margin-bottom:10px;
+  align-items:center;
+}
+
+.add-btn {
+  width:100%;
+  padding:10px;
+  background:transparent;
+  border:1px dashed rgba(255,34,54,0.35);
+  border-radius:9px;
+  color:var(--red);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  cursor:pointer;
+  font-family:'Nunito';
+  transition:all 0.2s;
+}
+.add-btn:hover { background:rgba(255,34,54,0.06); }
+
+.rm-btn {
+  background:none; border:none;
+  color:var(--muted); cursor:pointer;
+  font-size:18px; padding:0 4px;
+  flex-shrink:0;
+  line-height:1;
+}
+
+.submit-btn {
+  width:100%;
+  padding:15px;
+  background:linear-gradient(135deg, var(--red-dark), var(--red));
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  font-family:'Nunito';
+  box-shadow:0 6px 24px var(--red-glow);
+  transition:all 0.2s;
+}
+.submit-btn:hover { transform:translateY(-2px); box-shadow:0 10px 32px var(--red-glow); }
+
+/* Success */
+.success-box {
+  display:none;
+  background:var(--bg3);
+  border:1px solid rgba(6,214,160,0.25);
+  border-radius:20px;
+  padding:36px 24px;
+  text-align:center;
+}
+.success-box.show { display:block; animation:fadeUp 0.4s ease; }
+.success-box .s-icon { font-size:56px; margin-bottom:12px; }
+.success-box .s-title { font-family:'Oswald'; font-size:28px; letter-spacing:3px; color:var(--green); margin-bottom:16px; }
+.success-code-display {
+  background:var(--bg);
+  border:1px solid rgba(255,209,102,0.25);
+  border-radius:14px;
+  padding:20px;
+  margin:0 0 20px;
+}
+.success-code-display .sc-label { font-size:10px; letter-spacing:2px; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+.success-code-display .sc-code { font-family:'Oswald'; font-size:44px; letter-spacing:10px; color:var(--gold); text-shadow:0 0 24px rgba(255,209,102,0.4); }
+.success-msg { font-size:13px; color:var(--muted); line-height:1.9; }
+
+/* ===== DASHBOARD ===== */
+.stats-row {
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.stat-box {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px 10px;
+  text-align:center;
+}
+
+.stat-box .sn {
+  font-family:'Oswald';
+  font-size:30px;
+  line-height:1;
+  margin-bottom:4px;
+}
+.sn.red { color:var(--red); }
+.sn.orange { color:var(--orange); }
+.sn.green { color:var(--green); }
+.sn.blue { color:var(--congo-blue); }
+.stat-box .sl { font-size:9px; font-weight:800; letter-spacing:1px; color:var(--muted); text-transform:uppercase; }
+
+/* Map */
+.map-box {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:16px;
+  height:220px;
+  position:relative;
+  overflow:hidden;
+  margin-bottom:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.map-bg {
+  position:absolute; inset:0;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 30px),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.012) 0px, rgba(255,255,255,0.012) 1px, transparent 1px, transparent 30px);
+}
+
+.map-incident {
+  position:absolute;
+  transform:translate(-50%,-50%);
+}
+
+.map-incident .dot {
+  width:12px; height:12px;
+  border-radius:50%;
+  position:relative;
+}
+
+.map-incident .dot::after {
+  content:'';
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+  border:1.5px solid currentColor;
+  opacity:0.4;
+  animation:ring-expand 2s ease-out infinite;
+}
+
+@keyframes ring-expand {
+  0% { transform:scale(0.6); opacity:0.8; }
+  100% { transform:scale(1.8); opacity:0; }
+}
+
+.map-label-box {
+  z-index:2;
+  background:rgba(13,16,24,0.85);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:8px 14px;
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:2px;
+  text-transform:uppercase;
+}
+
+/* Alerts list */
+.alerts-list { display:flex; flex-direction:column; gap:9px; }
+
+.alert-row {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:13px 14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:border-color 0.2s;
+}
+
+.alert-row.hot { border-color:rgba(255,34,54,0.35); background:rgba(255,34,54,0.04); }
+.alert-row:hover { border-color:rgba(255,255,255,0.12); }
+
+.ar-dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+.ar-dot.red { background:var(--red); box-shadow:0 0 8px var(--red-glow); animation:blink 1.5s infinite; }
+.ar-dot.orange { background:var(--orange); }
+.ar-dot.green { background:var(--green); }
+.ar-dot.blue { background:var(--congo-blue); }
+
+.ar-info { flex:1; min-width:0; }
+.ar-name { font-size:13px; font-weight:700; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ar-detail { font-size:11px; color:var(--muted); }
+
+.ar-right { text-align:right; flex-shrink:0; }
+.ar-badge {
+  font-size:9px; font-weight:800; letter-spacing:1.5px;
+  padding:3px 8px; border-radius:20px; text-transform:uppercase;
+  display:inline-block; margin-bottom:4px;
+}
+.badge-red { background:rgba(255,34,54,0.15); color:var(--red); border:1px solid rgba(255,34,54,0.3); }
+.badge-orange { background:rgba(255,107,26,0.15); color:var(--orange); border:1px solid rgba(255,107,26,0.3); }
+.badge-green { background:rgba(6,214,160,0.1); color:var(--green); border:1px solid rgba(6,214,160,0.2); }
+.badge-blue { background:rgba(0,127,255,0.12); color:var(--congo-blue); border:1px solid rgba(0,127,255,0.25); }
+
+.ar-time { font-size:10px; color:var(--muted); }
+
+/* Commune legend */
+.commune-scroll {
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-bottom:20px;
+}
+
+.commune-chip {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:5px 12px;
+  font-size:11px;
+  font-weight:700;
+  color:var(--muted);
+  cursor:pointer;
+  transition:all 0.2s;
+}
+.commune-chip:hover, .commune-chip.active {
+  border-color:rgba(255,34,54,0.4);
+  color:var(--red);
+  background:rgba(255,34,54,0.06);
+}
+
+/* ===== HOW IT WORKS ===== */
+.steps { display:flex; flex-direction:column; gap:14px; margin-bottom:24px; }
+
+.step-card {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  display:flex;
+  align-items:flex-start;
+  gap:16px;
+}
+
+.step-num {
+  font-family:'Oswald';
+  font-size:36px;
+  font-weight:700;
+  color:var(--red);
+  opacity:0.4;
+  line-height:1;
+  flex-shrink:0;
+  width:40px;
+  text-align:center;
+}
+
+.step-title { font-size:15px; font-weight:800; margin-bottom:4px; }
+.step-desc { font-size:13px; color:var(--muted); line-height:1.7; }
+
+.channels-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:20px; }
+
+.channel-card {
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+}
+.channel-card .ch-icon { font-size:26px; margin-bottom:8px; }
+.channel-card .ch-title { font-size:13px; font-weight:800; margin-bottom:4px; }
+.channel-card .ch-detail { font-size:12px; color:var(--muted); line-height:1.6; }
+.channel-card .ch-status {
+  margin-top:8px;
+  font-size:10px; font-weight:800; letter-spacing:1px;
+  text-transform:uppercase;
+}
+.ch-status.active { color:var(--green); }
+.ch-status.planned { color:var(--orange); }
+
+.note-box {
+  background:rgba(17,138,178,0.08);
+  border:1px solid rgba(17,138,178,0.2);
+  border-radius:14px;
+  padding:18px;
+  font-size:13px;
+  color:var(--muted);
+  line-height:1.9;
+}
+
+.note-box strong { color:var(--text); }
+
+/* Responsive */
+@media(max-width:480px) {
+  .stats-row { grid-template-columns:repeat(2,1fr); }
+  .form-grid { grid-template-columns:1fr; }
+  .sos-btn { width:170px; height:170px; }
+  .channels-grid { grid-template-columns:1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- Alert overlay -->
+<div class="overlay" id="overlay"></div>
+<div class="alert-modal" id="alertModal" style="display:none">
+  <div class="modal-siren">🚨</div>
+  <div class="modal-title">ALERTE SOS</div>
+  <div class="modal-type-badge" id="modalTypeBadge">Kidnapping</div>
+  <div class="modal-code" id="modalCode">KIN-0000</div>
+  <div class="modal-msg">
+    Votre alerte a été transmise au centre de sécurité.<br>
+    Vos contacts d'urgence ont été notifiés avec votre position GPS.
+  </div>
+  <div class="countdown-bar-wrap">
+    <div class="countdown-bar" id="cbar"></div>
+  </div>
+  <div class="modal-countdown" id="modalCountdown">⏱ Envoi dans 10 secondes...</div>
+  <button class="modal-cancel" onclick="cancelAlert()">✕ Annuler l'alerte</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-badge">
+      <span class="shield">🛡</span>
+    </div>
+    <div class="logo-info">
+      <div class="brand">SOS Kinshasa</div>
+      <div class="tagline">Sécurité Citoyenne · RDC</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>Système actif</div>
+    <div class="pop-counter">+16 millions d'habitants</div>
+  </div>
+</header>
+<div class="flag-stripe"></div>
+
+<!-- TABS -->
+<div class="tab-bar">
+  <button class="tab active" onclick="switchTab('sos',this)">🆘 SOS</button>
+  <button class="tab" onclick="switchTab('register',this)">📋 S'inscrire</button>
+  <button class="tab" onclick="switchTab('dashboard',this)">📊 Centre de crise</button>
+  <button class="tab" onclick="switchTab('communes',this)">🗺 Communes</button>
+  <button class="tab" onclick="switchTab('how',this)">ℹ️ Guide</button>
+</div>
+
+<main>
+
+  <!-- ===== SOS SCREEN ===== -->
+  <div class="screen active" id="screen-sos">
+    <div class="sos-hero">
+      <div class="city-title">KINSHASA</div>
+      <div class="city-sub">Ville-Province · République Démocratique du Congo</div>
+
+      <!-- Code -->
+      <div class="code-card">
+        <div class="code-left">
+          <div class="lbl">Votre code SOS personnel</div>
+          <div class="val" id="myCode">KIN-7384</div>
+        </div>
+        <div class="code-actions">
+          <button class="mini-btn btn-copy" onclick="copyCode()">📋 Copier</button>
+          <button class="mini-btn btn-share" onclick="shareWA()">📱 WhatsApp</button>
+        </div>
+      </div>
+
+      <!-- Type d'incident -->
+      <div class="sec-label">Type d'incident</div>
+      <div class="alert-types" id="alertTypes">
+        <div class="alert-type-btn selected" onclick="selectType(this,'Kidnapping')">
+          <div class="at-icon">🔒</div>
+          <div class="at-label">Kidnapping</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType(this,'Kuluna')">
+          <div class="at-icon">🔪</div>
+          <div class="at-label">Kuluna</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType(this,'Intrusion')">
+          <div class="at-icon">🏠</div>
+          <div class="at-label">Intrusion</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType(this,'Vol armé')">
+          <div class="at-icon">🚨</div>
+          <div class="at-label">Vol armé</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType(this,'Agression')">
+          <div class="at-icon">⚠️</div>
+          <div class="at-label">Agression</div>
+        </div>
+        <div class="alert-type-btn" onclick="selectType(this,'Autre')">
+          <div class="at-icon">🆘</div>
+          <div class="at-label">Autre</div>
+        </div>
+      </div>
+
+      <!-- Bouton SOS -->
+      <div class="sos-wrap">
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <div class="pulse-ring"></div>
+        <button class="sos-btn" id="sosBtn" onclick="triggerSOS()">
+          <div class="icon">🆘</div>
+          <div class="sos-label">SOS</div>
+          <div class="sos-sub">Appuyer</div>
+        </button>
+      </div>
+
+      <div class="sos-hint">
+        Appuyez sur le bouton rouge pour déclencher une alerte.<br>
+        Votre position GPS + code + type d'incident seront envoyés.
+      </div>
+
+      <!-- Partager -->
+      <div class="sec-label">Partager votre code</div>
+      <div class="share-grid">
+        <button class="share-btn" onclick="shareWA()">
+          <span class="sb-icon">📱</span>
+          <div class="sb-info">
+            <div class="sb-name">WhatsApp</div>
+            <div class="sb-desc">Famille & proches</div>
+          </div>
+        </button>
+        <button class="share-btn" onclick="shareSMS()">
+          <span class="sb-icon">✉️</span>
+          <div class="sb-info">
+            <div class="sb-name">SMS</div>
+            <div class="sb-desc">Sans internet</div>
+          </div>
+        </button>
+        <button class="share-btn" onclick="copyCode()">
+          <span class="sb-icon">📋</span>
+          <div class="sb-info">
+            <div class="sb-name">Copier</div>
+            <div class="sb-desc">Presse-papier</div>
+          </div>
+        </button>
+        <button class="share-btn" onclick="dialUSSD()">
+          <span class="sb-icon">📞</span>
+          <div class="sb-info">
+            <div class="sb-name">Appel USSD</div>
+            <div class="sb-desc">*116*CODE#</div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== REGISTER SCREEN ===== -->
+  <div class="screen" id="screen-register">
+    <div class="success-box" id="successBox">
+      <div class="s-icon">✅</div>
+      <div class="s-title">Inscription réussie !</div>
+      <div class="success-code-display">
+        <div class="sc-label">Votre code SOS unique</div>
+        <div class="sc-code" id="generatedCode">KIN-0000</div>
+      </div>
+      <div class="success-msg">
+        Mémorisez ce code et partagez-le avec votre famille immédiatement.<br>
+        En cas d'urgence, ce code permet de vous identifier, vous localiser,<br>
+        et alerter vos contacts en quelques secondes.
+      </div>
+    </div>
+
+    <div id="regForm">
+      <div class="sec-label">Identité</div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Prénom *</label>
+            <input class="form-input" id="r-fname" type="text" placeholder="ex: Jean-Pierre">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nom *</label>
+            <input class="form-input" id="r-lname" type="text" placeholder="ex: Mukendi">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Téléphone *</label>
+          <input class="form-input" id="r-phone" type="tel" placeholder="+243 8X XXX XXXX">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Genre</label>
+          <select class="form-input" id="r-genre">
+            <option value="">Non précisé</option>
+            <option>Homme</option>
+            <option>Femme</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="sec-label">Localisation</div>
+      <div class="form-card">
+        <div class="form-grid">
+          <div class="form-group">
+            <label class="form-label">Commune *</label>
+            <select class="form-input" id="r-commune">
+              <option value="">Sélectionner...</option>
+              <option>Bandalungwa</option>
+              <option>Barumbu</option>
+              <option>Bumbu</option>
+              <option>Gombe</option>
+              <option>Kalamu</option>
+              <option>Kasa-Vubu</option>
+              <option>Kisenso</option>
+              <option>Kinshasa</option>
+              <option>Kintambo</option>
+              <option>Lemba</option>
+              <option>Limete</option>
+              <option>Lingwala</option>
+              <option>Makala</option>
+              <option>Maluku</option>
+              <option>Masina</option>
+              <option>Matete</option>
+              <option>Mont-Ngafula</option>
+              <option>N'Djili</option>
+              <option>Ngaba</option>
+              <option>Ngaliema</option>
+              <option>Ngiri-Ngiri</option>
+              <option>N'Sele</option>
+              <option>Selembao</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Quartier</label>
+            <input class="form-input" id="r-quartier" type="text" placeholder="Votre quartier">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Avenue / Rue</label>
+          <input class="form-input" id="r-avenue" type="text" placeholder="Avenue / numéro">
+        </div>
+      </div>
+
+      <div class="sec-label">Contacts d'urgence</div>
+      <div class="form-card">
+        <div id="contactList">
+          <div class="contact-row">
+            <input class="form-input" type="text" placeholder="Nom" style="flex:1">
+            <input class="form-input" type="tel" placeholder="+243..." style="flex:1">
+          </div>
+        </div>
+        <button class="add-btn" onclick="addContact()">+ Ajouter un contact</button>
+      </div>
+
+      <button class="submit-btn" onclick="registerUser()">🔐 Générer mon code SOS</button>
+    </div>
+  </div>
+
+  <!-- ===== DASHBOARD ===== -->
+  <div class="screen" id="screen-dashboard">
+    <div class="sec-label">Statistiques en temps réel</div>
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="sn red" id="s-alerts">7</div>
+        <div class="sl">Alertes actives</div>
+      </div>
+      <div class="stat-box">
+        <div class="sn orange" id="s-today">23</div>
+        <div class="sl">Aujourd'hui</div>
+      </div>
+      <div class="stat-box">
+        <div class="sn green" id="s-members">14 832</div>
+        <div class="sl">Membres</div>
+      </div>
+      <div class="stat-box">
+        <div class="sn blue">94%</div>
+        <div class="sl">Taux réponse</div>
+      </div>
+    </div>
+
+    <div class="sec-label">Carte des incidents · Kinshasa</div>
+    <div class="map-box">
+      <div class="map-bg"></div>
+      <!-- Incidents simulés sur la carte -->
+      <div class="map-incident" style="top:38%;left:45%">
+        <div class="dot" style="background:var(--red);color:var(--red)"></div>
+      </div>
+      <div class="map-incident" style="top:55%;left:30%">
+        <div class="dot" style="background:var(--red);color:var(--red)"></div>
+      </div>
+      <div class="map-incident" style="top:42%;left:65%">
+        <div class="dot" style="background:var(--orange);color:var(--orange)"></div>
+      </div>
+      <div class="map-incident" style="top:65%;left:55%">
+        <div class="dot" style="background:var(--orange);color:var(--orange)"></div>
+      </div>
+      <div class="map-incident" style="top:30%;left:38%">
+        <div class="dot" style="background:var(--green);color:var(--green)"></div>
+      </div>
+      <div class="map-label-box">📍 Carte GPS · Kinshasa (prototype)</div>
+    </div>
+
+    <div class="sec-label">Alertes récentes</div>
+    <div class="alerts-list">
+      <div class="alert-row hot">
+        <div class="ar-dot red"></div>
+        <div class="ar-info">
+          <div class="ar-name">Code KIN-7384 · Ngaliema</div>
+          <div class="ar-detail">🔒 Kidnapping · Position transmise · Secours en route</div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-badge badge-red">ACTIF</div>
+          <div class="ar-time">Il y a 3 min</div>
+        </div>
+      </div>
+      <div class="alert-row hot">
+        <div class="ar-dot red"></div>
+        <div class="ar-info">
+          <div class="ar-name">Code KIN-2251 · Masina</div>
+          <div class="ar-detail">🔪 Kuluna · Agression de rue · Unité déployée</div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-badge badge-red">ACTIF</div>
+          <div class="ar-time">Il y a 8 min</div>
+        </div>
+      </div>
+      <div class="alert-row">
+        <div class="ar-dot orange"></div>
+        <div class="ar-info">
+          <div class="ar-name">Code KIN-5590 · Lemba</div>
+          <div class="ar-detail">🏠 Intrusion domicile · Vérification en cours</div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-badge badge-orange">EN COURS</div>
+          <div class="ar-time">Il y a 22 min</div>
+        </div>
+      </div>
+      <div class="alert-row">
+        <div class="ar-dot orange"></div>
+        <div class="ar-info">
+          <div class="ar-name">Code KIN-8803 · Gombe</div>
+          <div class="ar-detail">🚨 Vol armé · Patrouille sur place</div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-badge badge-orange">EN COURS</div>
+          <div class="ar-time">Il y a 35 min</div>
+        </div>
+      </div>
+      <div class="alert-row">
+        <div class="ar-dot green"></div>
+        <div class="ar-info">
+          <div class="ar-name">Code KIN-3312 · Kasa-Vubu</div>
+          <div class="ar-detail">⚠️ Agression · Situation maîtrisée · Personne en sécurité</div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-badge badge-green">RÉSOLU</div>
+          <div class="ar-time">Il y a 1h 12</div>
+        </div>
+      </div>
+      <div class="alert-row">
+        <div class="ar-dot blue"></div>
+        <div class="ar-info">
+          <div class="ar-name">Code KIN-6671 · Kalamu</div>
+          <div class="ar-detail">🔪 Kuluna · Arrestation effectuée</div>
+        </div>
+        <div class="ar-right">
+          <div class="ar-badge badge-blue">CLÔTURÉ</div>
+          <div class="ar-time">Il y a 3h</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== COMMUNES SCREEN ===== -->
+  <div class="screen" id="screen-communes">
+    <div class="sec-label">Les 24 communes de Kinshasa</div>
+    <div class="commune-scroll" id="communeChips"></div>
+    <div class="sec-label">Niveau de risque par commune</div>
+    <div class="alerts-list" id="communeList"></div>
+  </div>
+
+  <!-- ===== HOW SCREEN ===== -->
+  <div class="screen" id="screen-how">
+    <div class="sec-label">Comment ça fonctionne</div>
+    <div class="steps">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div>
+          <div class="step-title">Inscrivez-vous et obtenez votre code</div>
+          <div class="step-desc">Créez votre profil avec votre commune, vos contacts d'urgence. Vous recevez un code unique KIN-XXXX lié à votre identité et localisation.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div>
+          <div class="step-title">Partagez votre code avec votre famille</div>
+          <div class="step-desc">Votre famille peut envoyer ce code au centre d'alerte si vous ne rentrez pas à l'heure prévue ou si vous avez disparu.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div>
+          <div class="step-title">Déclenchez le SOS en cas de danger</div>
+          <div class="step-desc">Appuyez sur le bouton rouge, sélectionnez le type d'incident (Kuluna, Kidnapping, Intrusion...). Votre position GPS est envoyée automatiquement.</div>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div>
+          <div class="step-title">Le centre de crise intervient</div>
+          <div class="step-desc">Le centre reçoit l'alerte avec votre code, votre position, le type d'incident et vos contacts. Une équipe de réponse est déclenchée.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Canaux d'activation</div>
+    <div class="channels-grid">
+      <div class="channel-card">
+        <div class="ch-icon">📱</div>
+        <div class="ch-title">Application mobile</div>
+        <div class="ch-detail">Bouton SOS + GPS automatique. Fonctionne avec data ou WiFi.</div>
+        <div class="ch-status active">✅ Actif</div>
+      </div>
+      <div class="channel-card">
+        <div class="ch-icon">✉️</div>
+        <div class="ch-title">SMS sans internet</div>
+        <div class="ch-detail">Envoyez votre code au numéro court d'urgence. Fonctionne partout.</div>
+        <div class="ch-status planned">🔶 Planifié</div>
+      </div>
+      <div class="channel-card">
+        <div class="ch-icon">📞</div>
+        <div class="ch-title">Code USSD</div>
+        <div class="ch-detail">Composez *116*VOTRECODE# depuis n'importe quel téléphone.</div>
+        <div class="ch-status planned">🔶 Planifié</div>
+      </div>
+      <div class="channel-card">
+        <div class="ch-icon">💚</div>
+        <div class="ch-title">WhatsApp</div>
+        <div class="ch-detail">Envoyez votre code au groupe communautaire de sécurité.</div>
+        <div class="ch-status active">✅ Actif</div>
+      </div>
+    </div>
+
+    <div class="note-box">
+      <strong>🇨🇩 À propos de SOS Kinshasa</strong><br><br>
+      Ce prototype a été conçu pour répondre aux défis sécuritaires de Kinshasa : kidnappings, phénomène Kuluna, intrusions domiciliaires et agressions armées. Pour un déploiement réel, ce système nécessite un partenariat avec la <strong>Police Nationale Congolaise</strong>, la <strong>Mairie de Kinshasa</strong>, et les opérateurs télécom (<strong>Airtel Congo, Orange RDC, Vodacom Congo</strong>) pour le système USSD et SMS court.
+    </div>
+  </div>
+
+</main>
+
+<script>
+// ===== DATA =====
+const communes = [
+  {name:'Bandalungwa', risk:'Moyen', code:'BDL', incidents:12},
+  {name:'Barumbu', risk:'Élevé', code:'BAR', incidents:28},
+  {name:'Bumbu', risk:'Élevé', code:'BUM', incidents:31},
+  {name:'Gombe', risk:'Moyen', code:'GOM', incidents:18},
+  {name:'Kalamu', risk:'Élevé', code:'KAL', incidents:35},
+  {name:'Kasa-Vubu', risk:'Moyen', code:'KSV', incidents:22},
+  {name:'Kisenso', risk:'Très élevé', code:'KIS', incidents:47},
+  {name:'Kinshasa', risk:'Moyen', code:'KIN', incidents:15},
+  {name:'Kintambo', risk:'Faible', code:'KTB', incidents:8},
+  {name:'Lemba', risk:'Élevé', code:'LEM', incidents:29},
+  {name:'Limete', risk:'Moyen', code:'LIM', incidents:19},
+  {name:'Lingwala', risk:'Faible', code:'LIN', incidents:9},
+  {name:'Makala', risk:'Très élevé', code:'MAK', incidents:51},
+  {name:'Maluku', risk:'Moyen', code:'MAL', incidents:14},
+  {name:'Masina', risk:'Très élevé', code:'MAS', incidents:58},
+  {name:'Matete', risk:'Élevé', code:'MAT', incidents:33},
+  {name:'Mont-Ngafula', risk:'Faible', code:'MNG', incidents:7},
+  {name:"N'Djili", risk:'Très élevé', code:'NDJ', incidents:62},
+  {name:'Ngaba', risk:'Élevé', code:'NGB', incidents:26},
+  {name:'Ngaliema', risk:'Moyen', code:'NGL', incidents:21},
+  {name:'Ngiri-Ngiri', risk:'Élevé', code:'NGI', incidents:38},
+  {name:"N'Sele", risk:'Faible', code:'NSE', incidents:6},
+  {name:'Selembao', risk:'Élevé', code:'SEL', incidents:30},
+];
+
+const riskColors = {
+  'Faible':'var(--green)',
+  'Moyen':'var(--congo-blue)',
+  'Élevé':'var(--orange)',
+  'Très élevé':'var(--red)'
+};
+
+const riskBadges = {
+  'Faible':'badge-green',
+  'Moyen':'badge-blue',
+  'Élevé':'badge-orange',
+  'Très élevé':'badge-red'
+};
+
+const riskDots = {
+  'Faible':'green',
+  'Moyen':'blue',
+  'Élevé':'orange',
+  'Très élevé':'red'
+};
+
+// Populate communes
+function populateCommunes() {
+  const chips = document.getElementById('communeChips');
+  const list = document.getElementById('communeList');
+  communes.forEach(c => {
+    const chip = document.createElement('div');
+    chip.className = 'commune-chip';
+    chip.textContent = c.name;
+    chip.onclick = () => {
+      document.querySelectorAll('.commune-chip').forEach(x => x.classList.remove('active'));
+      chip.classList.add('active');
+    };
+    chips.appendChild(chip);
+
+    const row = document.createElement('div');
+    row.className = 'alert-row';
+    row.innerHTML = `
+      <div class="ar-dot ${riskDots[c.risk]}"></div>
+      <div class="ar-info">
+        <div class="ar-name">${c.name} <span style="color:var(--muted);font-weight:400;font-size:11px">(${c.code}-XXXX)</span></div>
+        <div class="ar-detail">${c.incidents} incidents ce mois · Préfixe code: ${c.code}</div>
+      </div>
+      <div class="ar-right">
+        <div class="ar-badge ${riskBadges[c.risk]}">${c.risk}</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+}
+
+populateCommunes();
+
+// ===== TABS =====
+function switchTab(id, btn) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ===== ALERT TYPE =====
+let selectedType = 'Kidnapping';
+function selectType(el, type) {
+  document.querySelectorAll('.alert-type-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedType = type;
+}
+
+// ===== SOS =====
+let alertActive = false, cdTimer = null, cdVal = 10;
+
+function triggerSOS() {
+  if (alertActive) return;
+  alertActive = true;
+  cdVal = 10;
+
+  const code = document.getElementById('myCode').textContent;
+  document.getElementById('modalCode').textContent = code;
+  document.getElementById('modalTypeBadge').textContent = selectedType;
+
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('alertModal').style.display = 'block';
+  document.getElementById('cbar').style.width = '100%';
+
+  tick();
+  cdTimer = setInterval(tick, 1000);
+}
+
+function tick() {
+  cdVal--;
+  const pct = (cdVal / 10) * 100;
+  document.getElementById('cbar').style.width = pct + '%';
+  if (cdVal > 0) {
+    document.getElementById('modalCountdown').textContent = `⏱ Envoi dans ${cdVal} seconde${cdVal>1?'s':''}...`;
+  } else {
+    clearInterval(cdTimer);
+    document.getElementById('modalCountdown').textContent = '✅ Alerte transmise ! Secours alertés.';
+    document.getElementById('modalCountdown').style.color = 'var(--green)';
+    const n = parseInt(document.getElementById('s-alerts').textContent);
+    document.getElementById('s-alerts').textContent = n + 1;
+    const t = parseInt(document.getElementById('s-today').textContent);
+    document.getElementById('s-today').textContent = t + 1;
+    setTimeout(cancelAlert, 4000);
+  }
+}
+
+function cancelAlert() {
+  clearInterval(cdTimer);
+  alertActive = false;
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('alertModal').style.display = 'none';
+  document.getElementById('modalCountdown').style.color = 'var(--green)';
+}
+
+// ===== COPY =====
+function copyCode() {
+  const code = document.getElementById('myCode').textContent;
+  navigator.clipboard?.writeText(code).catch(()=>{});
+  const btns = document.querySelectorAll('.btn-copy, .mini-btn');
+  btns.forEach(b => { if(b.textContent.includes('Copier')||b.textContent.includes('📋')) { b.textContent='✅ Copié !'; setTimeout(()=>b.textContent='📋 Copier',2000); }});
+}
+
+// ===== SHARE =====
+function shareWA() {
+  const code = document.getElementById('myCode').textContent;
+  const msg = encodeURIComponent(`🆘 Mon code SOS Kinshasa : *${code}*\n\nEn cas d'urgence, envoyez ce code immédiatement au centre d'alerte SOS Kinshasa.\n🇨🇩 Système de Sécurité Citoyenne · Kinshasa`);
+  window.open('https://wa.me/?text='+msg,'_blank');
+}
+
+function shareSMS() {
+  const code = document.getElementById('myCode').textContent;
+  window.open(`sms:?body=Mon code SOS Kinshasa: ${code}`,'_blank');
+}
+
+function dialUSSD() {
+  const code = document.getElementById('myCode').textContent.replace('-','');
+  window.open(`tel:*116*${code}%23`,'_blank');
+}
+
+// ===== REGISTER =====
+function addContact() {
+  const list = document.getElementById('contactList');
+  const row = document.createElement('div');
+  row.className = 'contact-row';
+  row.innerHTML = `
+    <input class="form-input" type="text" placeholder="Nom" style="flex:1">
+    <input class="form-input" type="tel" placeholder="+243..." style="flex:1">
+    <button class="rm-btn" onclick="this.parentElement.remove()">✕</button>
+  `;
+  list.appendChild(row);
+}
+
+function genCode(commune) {
+  const map = {
+    'Bandalungwa':'BDL','Barumbu':'BAR','Bumbu':'BUM','Gombe':'GOM',
+    'Kalamu':'KAL','Kasa-Vubu':'KSV','Kisenso':'KIS','Kinshasa':'KIN',
+    'Kintambo':'KTB','Lemba':'LEM','Limete':'LIM','Lingwala':'LIN',
+    'Makala':'MAK','Maluku':'MAL','Masina':'MAS','Matete':'MAT',
+    'Mont-Ngafula':'MNG',"N'Djili":'NDJ','Ngaba':'NGB','Ngaliema':'NGL',
+    'Ngiri-Ngiri':'NGI',"N'Sele":'NSE','Selembao':'SEL'
+  };
+  const pfx = map[commune] || 'KIN';
+  return `${pfx}-${Math.floor(1000+Math.random()*9000)}`;
+}
+
+function registerUser() {
+  const fname = document.getElementById('r-fname').value.trim();
+  const lname = document.getElementById('r-lname').value.trim();
+  const phone = document.getElementById('r-phone').value.trim();
+  const commune = document.getElementById('r-commune').value;
+
+  if (!fname || !lname || !phone || !commune) {
+    alert('Veuillez remplir : Prénom, Nom, Téléphone et Commune.');
+    return;
+  }
+
+  const code = genCode(commune);
+  document.getElementById('myCode').textContent = code;
+  document.getElementById('generatedCode').textContent = code;
+
+  document.getElementById('regForm').style.display = 'none';
+  document.getElementById('successBox').classList.add('show');
+
+  const m = document.getElementById('s-members');
+  const n = parseInt(m.textContent.replace(/\s/g,''));
+  m.textContent = (n+1).toLocaleString('fr-FR');
+}
+</script>
+</body>
+</html>

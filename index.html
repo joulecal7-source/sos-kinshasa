@@ -857,9 +857,11 @@ select.form-input {
   <div class="modal-title">ALERTE SOS</div>
   <div class="modal-type-badge" id="modalTypeBadge">Kidnapping</div>
   <div class="modal-code" id="modalCode">KIN-0000</div>
+  <div id="modalPosition" style="font-size:13px;color:var(--gold);margin-bottom:10px;font-weight:700;">
+    📡 Capture GPS en cours...
+  </div>
   <div class="modal-msg">
-    Votre alerte a été transmise au centre de sécurité.<br>
-    Vos contacts d'urgence ont été notifiés avec votre position GPS.
+    Votre alerte sera transmise par WhatsApp avec votre position exacte sur Google Maps.
   </div>
   <div class="countdown-bar-wrap">
     <div class="countdown-bar" id="cbar"></div>
@@ -913,6 +915,11 @@ select.form-input {
           <button class="mini-btn btn-copy" onclick="copyCode()">📋 Copier</button>
           <button class="mini-btn btn-share" onclick="shareWA()">📱 WhatsApp</button>
         </div>
+      </div>
+
+      <!-- GPS Status -->
+      <div id="gpsStatus" style="font-size:12px;font-weight:700;letter-spacing:1px;color:var(--gold);margin-bottom:20px;padding:10px 16px;background:rgba(255,209,102,0.07);border:1px solid rgba(255,209,102,0.15);border-radius:10px;">
+        📡 Recherche GPS en cours...
       </div>
 
       <!-- Type d'incident -->
@@ -1387,6 +1394,49 @@ function selectType(el, type) {
   selectedType = type;
 }
 
+// ===== GPS =====
+let userLat = null, userLng = null, gpsWatcher = null;
+
+function startGPS() {
+  if (!navigator.geolocation) return;
+  // Surveille la position en continu
+  gpsWatcher = navigator.geolocation.watchPosition(
+    pos => {
+      userLat = pos.coords.latitude;
+      userLng = pos.coords.longitude;
+      const acc = Math.round(pos.coords.accuracy);
+      const gpsEl = document.getElementById('gpsStatus');
+      if (gpsEl) {
+        gpsEl.textContent = `📍 GPS actif · Précision ${acc}m`;
+        gpsEl.style.color = acc < 100 ? 'var(--green)' : 'var(--gold)';
+      }
+    },
+    err => {
+      const gpsEl = document.getElementById('gpsStatus');
+      if (gpsEl) {
+        gpsEl.textContent = '⚠️ GPS non disponible — activez la localisation';
+        gpsEl.style.color = 'var(--orange)';
+      }
+    },
+    { enableHighAccuracy: true, maximumAge: 5000, timeout: 15000 }
+  );
+}
+
+// Démarre le GPS dès le chargement
+startGPS();
+
+function getMapsLink() {
+  if (userLat && userLng) {
+    return `https://maps.google.com/?q=${userLat},${userLng}`;
+  }
+  // Fallback: centre de Kinshasa
+  return `https://maps.google.com/?q=-4.3225,15.3222`;
+}
+
+function getHeureLocale() {
+  return new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+}
+
 // ===== SOS =====
 let alertActive = false, cdTimer = null, cdVal = 10;
 
@@ -1398,6 +1448,18 @@ function triggerSOS() {
   const code = document.getElementById('myCode').textContent;
   document.getElementById('modalCode').textContent = code;
   document.getElementById('modalTypeBadge').textContent = selectedType;
+
+  // Affiche position GPS dans la modal
+  const posEl = document.getElementById('modalPosition');
+  if (posEl) {
+    if (userLat && userLng) {
+      posEl.innerHTML = `📍 Position GPS capturée<br><small style="color:var(--muted)">${userLat.toFixed(5)}, ${userLng.toFixed(5)}</small>`;
+      posEl.style.color = 'var(--green)';
+    } else {
+      posEl.textContent = '📍 Capture GPS en cours...';
+      posEl.style.color = 'var(--gold)';
+    }
+  }
 
   document.getElementById('overlay').style.display = 'block';
   document.getElementById('alertModal').style.display = 'block';
@@ -1415,14 +1477,40 @@ function tick() {
     document.getElementById('modalCountdown').textContent = `⏱ Envoi dans ${cdVal} seconde${cdVal>1?'s':''}...`;
   } else {
     clearInterval(cdTimer);
-    document.getElementById('modalCountdown').textContent = '✅ Alerte transmise ! Secours alertés.';
+    document.getElementById('modalCountdown').textContent = '✅ Alerte transmise ! Contacts notifiés.';
     document.getElementById('modalCountdown').style.color = 'var(--green)';
+    // Envoie WhatsApp automatiquement avec position GPS réelle
+    sendSOSWhatsApp();
     const n = parseInt(document.getElementById('s-alerts').textContent);
     document.getElementById('s-alerts').textContent = n + 1;
     const t = parseInt(document.getElementById('s-today').textContent);
     document.getElementById('s-today').textContent = t + 1;
-    setTimeout(cancelAlert, 4000);
+    setTimeout(cancelAlert, 5000);
   }
+}
+
+function sendSOSWhatsApp() {
+  const code = document.getElementById('myCode').textContent;
+  const heure = getHeureLocale();
+  const mapsLink = getMapsLink();
+  const gpsInfo = (userLat && userLng)
+    ? `📍 Position GPS exacte : ${mapsLink}`
+    : `📍 Position approximative (Kinshasa) : ${mapsLink}`;
+
+  const msg = encodeURIComponent(
+`🚨🚨 ALERTE SOS — URGENCE 🚨🚨
+
+👤 Code : *${code}*
+🔒 Incident : *${selectedType}*
+⏰ Heure : *${heure}*
+${gpsInfo}
+
+⚠️ Cette personne a besoin d'aide IMMÉDIATEMENT.
+Contactez les secours et rendez-vous à sa position.
+
+🇨🇩 SOS Kinshasa — Sécurité Citoyenne`
+  );
+  window.open('https://wa.me/?text=' + msg, '_blank');
 }
 
 function cancelAlert() {
@@ -1444,13 +1532,21 @@ function copyCode() {
 // ===== SHARE =====
 function shareWA() {
   const code = document.getElementById('myCode').textContent;
-  const msg = encodeURIComponent(`🆘 Mon code SOS Kinshasa : *${code}*\n\nEn cas d'urgence, envoyez ce code immédiatement au centre d'alerte SOS Kinshasa.\n🇨🇩 Système de Sécurité Citoyenne · Kinshasa`);
+  const msg = encodeURIComponent(
+`🆘 Mon code SOS Kinshasa : *${code}*
+
+En cas d'urgence, envoyez ce code immédiatement.
+Le système localisera ma position GPS automatiquement.
+
+🇨🇩 SOS Kinshasa — Sécurité Citoyenne
+🔗 https://joulecal7-source.github.io/sos-kinshasa/`
+  );
   window.open('https://wa.me/?text='+msg,'_blank');
 }
 
 function shareSMS() {
   const code = document.getElementById('myCode').textContent;
-  window.open(`sms:?body=Mon code SOS Kinshasa: ${code}`,'_blank');
+  window.open(`sms:?body=🆘 Mon code SOS Kinshasa: ${code} — En urgence envoyez ce code.`,'_blank');
 }
 
 function dialUSSD() {
